@@ -1,0 +1,60 @@
+:host{
+  display: block;
+  margin-top: 1rem;
+}
+
+.info-text{
+  text-align: center;
+}
+
+mat-spinner{
+  margin:auto;
+}
+
+mat-card{
+  margin-bottom: 10px
+}
+
+
+div.post-header{
+  margin-bottom: 15px;
+}
+
+span.post-title{
+  font-weight: 500;
+}
+
+span.post-subtitle{
+  font-style: oblique;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.64)
+}
+
+span.post-edited{
+  float:right;
+  font-style: oblique;
+  font-weight: bold;
+  color: rgb(19, 65, 226, 0.8)
+}
+
+mat-card-content{
+  padding: 10px;
+}
+
+p.post-content{
+  max-height: 10rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.post-image img{
+  max-height: 20rem;
+  max-width: 100%;
+  box-shadow: 1px 1px 5px rgb(0, 0, 0);
+  object-fit: contain;
+}
+
+
+mat-paginator{
+  margin-top: 2rem;
+}

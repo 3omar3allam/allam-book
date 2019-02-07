@@ -1,0 +1,39 @@
+<mat-card>
+  <mat-spinner *ngIf='isLoading'></mat-spinner>
+  <form [formGroup]='form' (submit)=onSavePost() *ngIf='!isLoading'>
+
+    <mat-form-field>
+      <textarea autofocus matInput formControlName='content'
+      rows="4" id='focus'
+      placeholder="What is in your mind..."></textarea>
+      <mat-error *ngIf="form.invalid">
+        Please enter your post
+      </mat-error>
+    </mat-form-field>
+
+    <div>
+      <input type="file" formControlName='image' accept="image/png,image/jpeg,image/jpg" hidden #filePicker (change)='onImagePicked($event)'/>
+      <button mat-stroked-button type='button'
+        (click)='filePicker.click()'>
+        {{ imagePreview? 'Edit photo':'Pick a photo' }}
+      </button>
+      <mat-error class='img-error' *ngIf="!form.controls['image'].valid">
+        Invalid file upload (make sure you entered a photo)
+      </mat-error>
+      <div class='image-preview' *ngIf="imagePreview && imagePreview !== '' && form.get('image').valid">
+        <span class="remove" disabled (click)=deleteImage()>X</span>
+        <img [src]='imagePreview' alt='cannot preview image' />
+      </div>
+    </div>
+
+    <br /><br />
+
+    <button
+      [disabled]='form.invalid'
+      mat-raised-button
+      color="primary"
+      type='submit'>{{mode == 0? "Share":"Save"}}
+    </button>
+
+  </form>
+</mat-card>

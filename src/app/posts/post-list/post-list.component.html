@@ -1,0 +1,40 @@
+<mat-card *ngIf=isLoading>
+  <mat-spinner></mat-spinner>
+</mat-card>
+<mat-accordion multi='true' *ngIf="posts.length > 0 && !isLoading">
+  <mat-card class='post' *ngFor='let post of posts'>
+    <div class='post-header'>
+      <span class='post-title'>
+        {{post.creator.name}}
+      </span>
+      <span class='post-subtitle'>
+          {{post.dateDiff}}
+      </span>
+      <span class='post-edited post-subtitle' *ngIf='post.edited'>
+        edited
+      </span>
+    </div>
+    <mat-card-content>
+      <p class="post-content" [innerHTML]='post.showContent | safe'></p>
+      <div class='post-image' *ngIf='post.image'>
+        <mat-card-actions>
+          <button mat-raised-button (click)=toggleImage(post)>{{post.showImage? 'hide photo':'display photo'}}</button>
+        </mat-card-actions>
+        <img
+         [src]='post.image.path'
+          alt='cannot show image'
+          *ngIf='post.showImage' />
+      </div>
+    </mat-card-content>
+    <mat-card-actions *ngIf="authenticated && user.id == post.creator.id">
+      <a color='primary' mat-button [routerLink]="['/edit',post.id]">Edit</a>
+      <button (click)="onDelete(post.id)" color='warn' mat-button>Delete</button>
+    </mat-card-actions>
+  </mat-card>
+</mat-accordion>
+
+<mat-paginator [length]=totalPosts [pageSize]=pageSize [pageSizeOptions]=pageSizeOptions (page)='onChangePage($event)'></mat-paginator>
+
+<ng-template *ngIf='!isLoading && posts.length == 0'>
+  <p class='info-text mat-body-1'>No posts added yet!</p>
+</ng-template>

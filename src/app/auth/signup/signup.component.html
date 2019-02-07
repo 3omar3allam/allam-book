@@ -1,0 +1,72 @@
+<mat-card>
+  <mat-spinner *ngIf='isLoading'></mat-spinner>
+  <form *ngIf='!isLoading' #signupForm=ngForm (submit)='onSignup()'>
+
+    <mat-form-field appearance='outline'>
+      <mat-label>First Name</mat-label>
+      <input matInput name='fname'
+      type='text' id='focus'
+      #fname=ngModel
+      [(ngModel)]=userModel.firstName required
+      />
+      <mat-hint style='color:red' *ngIf="fname.touched && fname.invalid">
+        This field is required.
+      </mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance='outline'>
+      <mat-label>Last Name</mat-label>
+      <input matInput name='lname'
+      type='text'
+      #lname=ngModel
+      [(ngModel)]=userModel.lastName required
+      />
+      <mat-hint style='color:red' *ngIf="lname.touched && lname.invalid">
+        This field is required
+      </mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance='outline'>
+      <mat-label>Email Address</mat-label>
+      <input matInput name='email'
+      type='email'
+      #email=ngModel
+      [(ngModel)]=userModel.email required email
+      />
+      <mat-hint style='color:red' *ngIf="email.touched && email.invalid">
+        Please enter a valid email.
+      </mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance='outline'>
+      <mat-label>Password</mat-label>
+      <input matInput name='password'
+      type='password' #pass1=ngModel
+      [(ngModel)]=userModel.password required
+      />
+      <mat-hint style='color:red' *ngIf="pass1.touched && pass1.invalid">
+        Password must have at least 8 characters.
+      </mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance='outline'>
+      <mat-label>Confirm Password</mat-label>
+      <input matInput name='password'
+      type='password' #pass2=ngModel
+      required ngModel
+      (keyup)=validatePassword(pass2.value) (blur)=validatePassword(pass2.value)
+      />
+      <mat-hint style='color:red' *ngIf="pass2.touched && (pass2.invalid || passwordNoMatch)">
+        Passwords don't match.
+      </mat-hint>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="accent"
+      type='submit'
+      [disabled]="signupForm.form.invalid || passwordNoMatch">Register
+    </button>
+    <a id='login' routerLink='/login'>Already have an account</a>
+  </form>
+</mat-card>

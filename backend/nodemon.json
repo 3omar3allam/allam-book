@@ -1,0 +1,8 @@
+{
+  "env": {
+    "MONGO_ATLAS_PW": "xdClArKAqRTZNAI5",
+    "JWT_KEY": "mySecretCode",
+    "SESSION_EXPIRE": 604800,
+    "PORT": 3000
+  }
+}

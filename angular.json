@@ -3,17 +3,17 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mean-course": {
+    "allam-book": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "app",
       "schematics": {},
-      "targets": {
+      "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/mean-course",
+            "outputPath": "backend/angular",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -23,6 +23,9 @@
               "src/assets"
             ],
             "styles": [
+              {
+                "input": "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+              },
               "src/styles.css"
             ],
             "scripts": []
@@ -50,18 +53,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "mean-course:build"
+            "browserTarget": "allam-book:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "mean-course:build:production"
+              "browserTarget": "allam-book:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mean-course:build"
+            "browserTarget": "allam-book:build"
           }
         },
         "test": {
@@ -72,6 +75,9 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
+              {
+                "input": "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+              },
               "src/styles.css"
             ],
             "scripts": [],
@@ -95,7 +101,7 @@
         }
       }
     },
-    "mean-course-e2e": {
+    "allam-book-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "targets": {
@@ -103,11 +109,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "mean-course:serve"
+            "devServerTarget": "allam-book:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "mean-course:serve:production"
+              "devServerTarget": "allam-book:serve:production"
             }
           }
         },
@@ -123,5 +129,5 @@
       }
     }
   },
-  "defaultProject": "mean-course"
+  "defaultProject": "allam-book"
 }

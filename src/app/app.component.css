@@ -1,0 +1,20 @@
+app-header{
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 999;
+}
+
+main{
+  position: relative;
+  top: 64px;
+  width: 80%;
+  margin:auto;
+  clear:both;
+}
+
+@media (max-width:768px){
+  main{
+    top: 128px;
+  }
+}

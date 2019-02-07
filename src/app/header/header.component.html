@@ -1,0 +1,52 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row *ngIf='!mobileView || (mobileView && !scrolled)'>
+    <span id='title'><a (click)='refresh()'>{{title}}</a></span>
+
+    <span class="space"></span>
+    <ul id='header-buttons' *ngIf='!mobileView'>
+      <li *ngIf=authenticated>
+        <a mat-button routerLink="/create" routerLinkActive="mat-accent">New Post</a>
+      </li>
+
+      <li *ngIf="!authenticated">
+        <a mat-button routerLink="/login" routerLinkActive="mat-accent">Login</a>
+      </li>
+
+      <li *ngIf="!authenticated">
+        <a mat-button routerLink="/register" routerLinkActive="mat-accent">Signup</a>
+      </li>
+
+      <li *ngIf=authenticated>
+        <a mat-button>{{username}}</a>
+      </li>
+
+      <li *ngIf=authenticated>
+        <button mat-button (click)=onLogout()>Logout</button>
+      </li>
+    </ul>
+  </mat-toolbar-row>
+  <mat-toolbar-row *ngIf=mobileView>
+    <ul id='header-buttons'>
+      <li *ngIf=authenticated>
+        <a mat-button routerLink="/create" routerLinkActive="mat-accent">New Post</a>
+      </li>
+
+      <li *ngIf="!authenticated" class='unauth'>
+        <a mat-button routerLink="/login" routerLinkActive="mat-accent">Login</a>
+      </li>
+
+      <li *ngIf="!authenticated" class='unauth'>
+        <a mat-button routerLink="/register" routerLinkActive="mat-accent">Signup</a>
+      </li>
+
+      <li *ngIf=authenticated>
+        <a mat-button>{{username}}</a>
+      </li>
+
+      <li *ngIf=authenticated>
+        <button mat-button (click)=onLogout()>Logout</button>
+      </li>
+    </ul>
+  </mat-toolbar-row>
+
+</mat-toolbar>
