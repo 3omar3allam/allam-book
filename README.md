@@ -14,4 +14,4 @@ Navigate to [backend](backend/) directory and run `npm install` then run `nodemo
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/angular/` directory. Use the `--prod` flag for a production build.
+Run `ng build` to build the project. The build artifacts will be stored in the `backend/angular/` directory. Use the `--prod` flag for a production build.
