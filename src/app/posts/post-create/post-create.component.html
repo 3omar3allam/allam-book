@@ -6,18 +6,17 @@
       <textarea autofocus matInput formControlName='content'
       rows="4" id='focus'
       placeholder="What is in your mind..."></textarea>
-      <mat-error *ngIf="form.invalid">
-        Please enter your post
-      </mat-error>
     </mat-form-field>
 
     <div>
-      <input type="file" formControlName='image' accept="image/png,image/jpeg,image/jpg,image/gif" hidden #filePicker (change)='onImagePicked($event)'/>
+      <input type="file" formControlName='image'
+       accept="image/png,image/jpeg,image/jpg,image/gif"
+        hidden #filePicker (change)='onImagePicked($event)'/>
       <button mat-stroked-button type='button'
         (click)='filePicker.click()'>
-        {{ imagePreview? 'Edit photo':'Pick a photo' }}
+        {{ imagePreview? 'Edit photo':'Add a photo' }}
       </button>
-      <mat-error class='img-error' *ngIf="!form.controls['image'].valid">
+      <mat-error class='img-error' *ngIf="imageError">
         Invalid file upload (make sure you entered a photo)
       </mat-error>
       <div class='image-preview' *ngIf="imagePreview && imagePreview !== '' && form.get('image').valid">

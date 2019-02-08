@@ -6,8 +6,9 @@ const Schema = mongoose.Schema;
 const postSchema = Schema({
   creator: {type: Schema.ObjectId, ref:'User', required:true, childPath: "posts", validateExistence: true },
   date: {type: Date, required:true},
-  content: {type: String, required:true},
-  imagePath: {type: String, required:false},
+  content: {type: String},
+  hasImage: {type: Boolean},
+  imagePath: {type: String},
   comments: [ {
     required:false,
     type: Schema({
@@ -19,5 +20,10 @@ const postSchema = Schema({
   } ],
   edited: {type: Boolean, required: true, default: false},
 });
+
+postSchema.pre('validate', next => {
+  if(this.content == null && this.hasImage=="false") next(new Error('post must have at least content or image'));
+  else next();
+})
 
 module.exports = mongoose.model('Post', postSchema);

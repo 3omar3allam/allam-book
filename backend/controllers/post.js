@@ -80,7 +80,6 @@ exports.addPost = (req,res,next)=>{
   if(req.files) {
     const url = req.protocol +"://" + req.get('host');
     imagePath = url+ "/images/" + extractFile(req.files.image);
-    console.log(imagePath);
   }
   User.findById(req.userData.userId)
   .then(user => {
@@ -90,6 +89,7 @@ exports.addPost = (req,res,next)=>{
       content: req.body.content,
       imagePath: imagePath,
       edited: false,
+      hasImage: req.body.hasImage
     });
     post.save().then(result => {
       res.status(201).json({
@@ -140,6 +140,7 @@ exports.editPost = (req,res,next) => {
       Post.updateOne({_id: req.params.id},{
         content: req.body.content,
         imagePath: imagePath,
+        hasImage: req.body.hasImage
       }).then(result=>{
         if(result.nModified){
           post.edited = true;
