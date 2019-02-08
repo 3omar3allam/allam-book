@@ -3,10 +3,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostService } from '../post.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
-import { mimeType } from './mime-type.validator';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
-import { SafeResourceUrl } from '@angular/platform-browser';
+import { imageCompress } from './image.compress';
 
 const enum mode  {
   create=0,
@@ -25,9 +24,12 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   private postId: string;
   public post: Post;
   isLoading = false;
-  imagePreview: SafeResourceUrl= null
+  imagePreview: string;
+  imageFile: File;
+  imageDelete: boolean;
 
   private authStatusSub: Subscription;
+  private compressSub: Subscription;
 
   constructor(
     private postService: PostService,
@@ -36,22 +38,23 @@ export class PostCreateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
-      _authStatus=> {
+      _=> {
         this.isLoading = false;
       }
     );
     setTimeout(()=>{
       document.getElementById('focus').focus();
-    },150);
+    },500);
     this.form = new FormGroup({
       content: new FormControl(null, {
         validators: [Validators.required]
       }),
       image: new FormControl(null, {
-        validators : null,
-        asyncValidators: [mimeType],
+        validators : null
       }),
     });
+    this.imageFile = null;
+    this.imageDelete = false;
     this.route.paramMap.subscribe((paramMap:ParamMap) => {
       if(paramMap.has('id')){
         this.mode = mode.edit;
@@ -64,7 +67,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
               id: postData._id,
               creator: postData.creator,
               content: postData.content,
-              image: postData.image,
+              imagePath: postData.imagePath,
               date: postData.date,
               edited: postData.edited,
               dateDiff: null,
@@ -74,9 +77,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
             this.form.patchValue({
               content: this.post.content,
             });
-            if(this.post.image){
-              this.post.image.path = this.postService.createImageUrl(this.post.image.type,this.post.image.binary);
-              this.imagePreview = this.post.image.path;
+            if(this.post.imagePath){
+              this.imagePreview = this.post.imagePath;
             }
           });
       } else{
@@ -88,57 +90,61 @@ export class PostCreateComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
+    if(this.compressSub)this.compressSub.unsubscribe();
   }
 
   onTextEntered(event:Event){
     const text = (event.target as HTMLInputElement).value;
     this.form.patchValue({content: text});
-    this.form.updateValueAndValidity();
-    if(this.form.invalid){
-      console.log('invalid');
-    }
   }
 
   onSavePost(){
-    if (this.form.invalid) return;
+    if(this.form.invalid) return;
     if (this.mode == mode.create){
       this.postService.addPost(
         this.form.value.content,
-        this.form.value.image,
+        this.imageFile,
         new Date()
       );
     } else{
       this.postService.editPost(
         this.postId,
         this.form.value.content,
-        this.form.value.image,
-        this.post
+        this.imageFile,
+        this.post,
+        this.imageDelete
       );
     }
   }
 
   onImagePicked(event: Event){
-    console.log('picked');
-    const file = (event.target as HTMLInputElement).files[0];
-    this.form.get('image').updateValueAndValidity();
+    this.imageFile = (event.target as HTMLInputElement).files[0];
+    this.form.updateValueAndValidity();
     if(!this.form.controls['image'].valid){
-      console.log('invalid')
-      this.form.patchValue({image:''});
+      this.form.patchValue({image:null});
       this.imagePreview = null;
+      this.imageFile = null;
     }
     else{
-      console.log(this.form.controls['image'].valid);
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result;
-      }
-      reader.readAsDataURL(file);
+      this.compressSub = imageCompress(this.imageFile).subscribe(
+        compressedImage => {
+          this.imageFile = compressedImage;
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.imagePreview = reader.result.toString();
+          }
+          reader.readAsDataURL(this.imageFile);
+        },_=>{
+          this.deleteImage();
+        }
+      )
     }
   }
   deleteImage(){
+    this.imageDelete = true;
     this.imagePreview = null;
     this.form.patchValue({image:null});
-    if(this.post && this.post.image) this.post.image.path = null;
-    (document.querySelector("input[type='file']") as HTMLInputElement).value = null;
+    this.imageFile = null;
+    if(this.post) this.post;
   }
 }

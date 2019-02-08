@@ -7,14 +7,7 @@ const postSchema = Schema({
   creator: {type: Schema.ObjectId, ref:'User', required:true, childPath: "posts", validateExistence: true },
   date: {type: Date, required:true},
   content: {type: String, required:true},
-  image: {
-    required: false,
-    type: Schema({
-      name: {type:String, required:false},
-      binary: {type: Buffer, required:true},
-      type: {type: String, enum:['image/png','image/jpg','image/jpeg'], required:true},
-    }),
-  },
+  imagePath: {type: String, required:false},
   comments: [ {
     required:false,
     type: Schema({

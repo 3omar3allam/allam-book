@@ -1,30 +1,26 @@
 const Post = require('../models/post');
 const User = require('../models/user');
 
+const extractFile = require('../middleware/extract-file');
+
 exports.getPosts = (req,res,next)=>{
   const pageSize = parseInt(req.query.pagesize);
   const currentPage = parseInt(req.query.page);
   const postQuery = Post.find().sort({date: 'desc'})
     .populate('creator','firstName lastName');
-  let fetchedPosts;
   if(pageSize && currentPage){
     postQuery
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize);
   }
+  let fetchedPosts = [];
   postQuery.then(documents=>{
-    Post.countDocuments()
+      fetchedPosts = documents;
+      return Post.countDocuments()
+    })
     .then(count=>{
-      documents = documents.map((post)=>{
+      fetchedPosts = fetchedPosts.map((post)=>{
         let creator = post.creator;
-        let image= post.image;
-        if(image){
-          image = {
-            name: image.name,
-            binary: image.binary.toString('base64'),
-            type: image.type,
-          }
-        }
         return {
           id: post._id,
           creator: {
@@ -33,23 +29,22 @@ exports.getPosts = (req,res,next)=>{
           },
           date: post.date,
           content: post.content,
-          image: image,
+          imagePath: post.imagePath,
           edited: post.edited,
         };
       })
       res.status(200).json({
         message: "Posts fetched successfully.",
-        posts: documents,
+        posts: fetchedPosts,
         total: count,
       });
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({
+        message: "Failed to load posts!",
+      });
     });
-  })
-  .catch(error => {
-    console.log(error);
-    res.status(500).json({
-      message: "Failed to load posts!",
-    });
-  });
 }
 
 exports.getPost = (req,res,next)=>{
@@ -58,14 +53,6 @@ exports.getPost = (req,res,next)=>{
     .then(post => {
       if(post){
         let creator = post.creator;
-        let image = post.image;
-        if (image){
-          image={
-            name: image.name,
-            binary: image.binary.toString('base64'),
-            type: image.type,
-          }
-        }
         res.status(200).json({
           id: post._id,
           creator: {
@@ -74,7 +61,7 @@ exports.getPost = (req,res,next)=>{
           },
           date: post.date,
           content: post.content,
-          image:image,
+          imagePath: post.imagePath,
         });
       }else{
         res.status(404).json({message: 'Post not found'});
@@ -89,29 +76,26 @@ exports.getPost = (req,res,next)=>{
 }
 
 exports.addPost = (req,res,next)=>{
-  User.findById(req.userData.userId,'posts')
+  let imagePath = null;
+  if(req.files) {
+    const url = req.protocol +"://" + req.get('host');
+    imagePath = url+ "/images/" + extractFile(req.files.image);
+    console.log(imagePath);
+  }
+  User.findById(req.userData.userId)
   .then(user => {
     const post = new Post({
-      creator: user._id,
+      creator: user,
       date: req.body.date,
       content: req.body.content,
+      imagePath: imagePath,
       edited: false,
     });
-    if(req.files){
-      post['image'] = {
-        name: req.files.image.name,
-        binary: req.files.image.data,
-        type: req.files.image.mimetype,
-      };
-    }
-    post.save().then(()=>{
-      user.posts.push(post);
-      user.save().then(()=>{
-        res.status(201).json({
-          message: "Post added!",
-        });
+    post.save().then(result => {
+      res.status(201).json({
+        message:'Post added!',
       });
-    });
+    })
   })
   .catch(error => {
     console.log(error);
@@ -147,18 +131,15 @@ exports.deletePost = (req,res,next) => {
 exports.editPost = (req,res,next) => {
   Post.findById(req.params.id)
   .then(post => {
-    image = null;
-    if(req.files){
-      image = {
-        name: req.files.image.name,
-        binary: req.files.image.data,
-        type: req.files.image.mimetype,
-      };
+    let imagePath = null;
+    if(req.files) {
+      const url = req.protocol +"://" + req.get('host');
+      imagePath = url+ "/images/" + extractFile(req.files.image);
     }
     if(post.creator._id == req.userData.userId){
       Post.updateOne({_id: req.params.id},{
         content: req.body.content,
-        image: image,
+        imagePath: imagePath,
       }).then(result=>{
         if(result.nModified){
           post.edited = true;

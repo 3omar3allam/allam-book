@@ -12,7 +12,7 @@
     </mat-form-field>
 
     <div>
-      <input type="file" formControlName='image' accept="image/png,image/jpeg,image/jpg" hidden #filePicker (change)='onImagePicked($event)'/>
+      <input type="file" formControlName='image' accept="image/png,image/jpeg,image/jpg,image/gif" hidden #filePicker (change)='onImagePicked($event)'/>
       <button mat-stroked-button type='button'
         (click)='filePicker.click()'>
         {{ imagePreview? 'Edit photo':'Pick a photo' }}

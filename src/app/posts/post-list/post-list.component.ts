@@ -40,15 +40,9 @@ export class PostListComponent implements OnInit, OnDestroy {
         name: `${this.auth.getAuth().firstName} ${this.auth.getAuth().lastName}`,
       }
     }
-
     this.postsSub = this.postService.getPostUpdateListener()
       .subscribe(data => {
-        this.posts = data.posts.map(post => {
-          if(post.image){
-            post.image.path = this.postService.createImageUrl(post.image.type,post.image.binary);
-          }
-          return post
-        });
+        this.posts = data.posts;
         this.totalPosts = data.total;
         this.timeDelta();
         this.urlify();
@@ -166,6 +160,10 @@ export class PostListComponent implements OnInit, OnDestroy {
       params: 9,
     }
     this.posts.forEach(post=>{
+      if(!post.content){
+        post.showContent = "";
+        return;
+      }
       let links = post.content.match(urlRegex);
       post.showContent = post.content;
       if(!links){
