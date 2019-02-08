@@ -160,8 +160,9 @@ export class PostListComponent implements OnInit, OnDestroy {
       params: 9,
     }
     this.posts.forEach(post=>{
-      if(!post.content){
+      if(!post.content|| post.content == ""){
         post.showContent = "";
+        post.showImage = true;
         return;
       }
       let links = post.content.match(urlRegex);

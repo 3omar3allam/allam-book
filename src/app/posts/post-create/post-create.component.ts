@@ -27,6 +27,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   imagePreview: string;
   imageFile: File;
   imageDelete: boolean;
+  imageError: boolean;
 
   private authStatusSub: Subscription;
   private compressSub: Subscription;
@@ -47,7 +48,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     },500);
     this.form = new FormGroup({
       content: new FormControl(null, {
-        validators: [Validators.required]
+        validators: [Validators.required],
       }),
       image: new FormControl(null, {
         validators : null
@@ -79,6 +80,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
             });
             if(this.post.imagePath){
               this.imagePreview = this.post.imagePath;
+              this.form.get('content').clearValidators();
+              this.form.get('content').updateValueAndValidity();
             }
           });
       } else{
@@ -93,23 +96,20 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     if(this.compressSub)this.compressSub.unsubscribe();
   }
 
-  onTextEntered(event:Event){
-    const text = (event.target as HTMLInputElement).value;
-    this.form.patchValue({content: text});
-  }
-
   onSavePost(){
     if(this.form.invalid) return;
+    let content = this.form.get('content').value;
+    if(content == null) content = "";
     if (this.mode == mode.create){
       this.postService.addPost(
-        this.form.value.content,
+        content,
         this.imageFile,
         new Date()
       );
     } else{
       this.postService.editPost(
         this.postId,
-        this.form.value.content,
+        content,
         this.imageFile,
         this.post,
         this.imageDelete
@@ -119,32 +119,24 @@ export class PostCreateComponent implements OnInit, OnDestroy {
 
   onImagePicked(event: Event){
     this.imageFile = (event.target as HTMLInputElement).files[0];
-    this.form.updateValueAndValidity();
-    if(!this.form.controls['image'].valid){
-      this.form.patchValue({image:null});
-      this.imagePreview = null;
-      this.imageFile = null;
-    }
-    else{
-      this.compressSub = imageCompress(this.imageFile).subscribe(
-        compressedImage => {
-          this.imageFile = compressedImage;
-          const reader = new FileReader();
-          reader.onload = () => {
-            this.imagePreview = reader.result.toString();
-          }
-          reader.readAsDataURL(this.imageFile);
-        },_=>{
-          this.deleteImage();
-        }
-      )
-    }
+    this.compressSub = imageCompress(this.imageFile).subscribe(
+      ({file,preview}) => {
+        this.form.get('content').clearValidators();
+        this.form.get('content').updateValueAndValidity();
+        this.imageError = false;
+        this.imageFile = file;
+        this.imagePreview = preview;
+      },_error=>{
+        this.imageError = true;
+        this.deleteImage();
+      });
   }
   deleteImage(){
+    this.form.get('content').setValidators(Validators.required);
+    this.form.get('content').updateValueAndValidity();
     this.imageDelete = true;
     this.imagePreview = null;
     this.form.patchValue({image:null});
     this.imageFile = null;
-    if(this.post) this.post;
   }
 }

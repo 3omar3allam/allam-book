@@ -39,12 +39,15 @@ export class PostService {
   }
   addPost(content:string, image: File, date: Date){
     const postData = new FormData();
+    postData.append('content',content);
+    postData.append('date', date.toJSON());
+    let hasImage = "false";
     if(image){
+      hasImage = "true";
       let imageName = `${this.auth.getAuth().firstName} ${this.auth.getAuth().lastName} ${date.toJSON()}`;
       postData.append('image', image, imageName);
     }
-    postData.append('content',content);
-    postData.append('date', date.toJSON());
+    postData.append(hasImage,hasImage);
     this._http
       .post<{message: string,post: Post}>(
         BACKEND_URL,
@@ -66,9 +69,6 @@ export class PostService {
     (BACKEND_URL + id);
   }
   editPost(userId:string, content:string, image: File, originalPost: Post, imageDelete: boolean){
-    console.log('new',image);
-    console.log('old',originalPost.imagePath);
-    console.log('deleted',imageDelete);
     if(originalPost.content == content){
       if( !image && (!originalPost.imagePath || (originalPost.imagePath && !imageDelete)) )
       {
@@ -80,11 +80,13 @@ export class PostService {
     let postData: FormData;
     postData = new FormData();
     postData.append('content',content);
+    let hasImage = "false";
     if(image){
+      hasImage = "true"
       let imageName = `${this.auth.getAuth().firstName} ${this.auth.getAuth().lastName} ${new Date().toJSON()}`;
       postData.append('image',image, imageName);
     }
-
+    postData.append('hasImage',hasImage);
     this._http.put<any>
     (BACKEND_URL + userId, postData)
       .subscribe(response => {
