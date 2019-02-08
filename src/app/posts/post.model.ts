@@ -1,11 +1,3 @@
-import { SafeResourceUrl } from "@angular/platform-browser";
-
-export const enum imageType {
-  'image/png',
-  'image/jpg',
-  'image/jpeg'
-}
-
 export class Post {
   id: string;
   creator: {
@@ -15,12 +7,7 @@ export class Post {
   date: Date;
   content: string;
   showContent: string;
-  image: {
-    name: string,
-    binary: string,
-    type: imageType,
-    path: SafeResourceUrl,
-  };
+  imagePath: string;
   edited: boolean;
   dateDiff: string;
   showImage: boolean;

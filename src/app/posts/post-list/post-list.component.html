@@ -16,12 +16,12 @@
     </div>
     <mat-card-content>
       <p class="post-content" [innerHTML]='post.showContent | safe'></p>
-      <div class='post-image' *ngIf='post.image'>
+      <div class='post-image' *ngIf='post.imagePath'>
         <mat-card-actions>
           <button mat-raised-button (click)=toggleImage(post)>{{post.showImage? 'hide photo':'display photo'}}</button>
         </mat-card-actions>
         <img
-         [src]='post.image.path'
+         [src]='post.imagePath'
           alt='cannot show image'
           *ngIf='post.showImage' />
       </div>

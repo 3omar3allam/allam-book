@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Post, imageType } from './post.model';
+import { Post } from './post.model';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
@@ -39,12 +39,12 @@ export class PostService {
   }
   addPost(content:string, image: File, date: Date){
     const postData = new FormData();
-    postData.append('content',content);
-    postData.append('date', date.toJSON());
     if(image){
-      let imageName = `${this.auth.getAuth().firstName}-${this.auth.getAuth().lastName}-${date.toJSON()}`.toLowerCase();
+      let imageName = `${this.auth.getAuth().firstName} ${this.auth.getAuth().lastName} ${date.toJSON()}`;
       postData.append('image', image, imageName);
     }
+    postData.append('content',content);
+    postData.append('date', date.toJSON());
     this._http
       .post<{message: string,post: Post}>(
         BACKEND_URL,
@@ -65,9 +65,12 @@ export class PostService {
     return this._http.get<any>
     (BACKEND_URL + id);
   }
-  editPost(userId:string, content:string, image: File, originalPost: Post){
+  editPost(userId:string, content:string, image: File, originalPost: Post, imageDelete: boolean){
+    console.log('new',image);
+    console.log('old',originalPost.imagePath);
+    console.log('deleted',imageDelete);
     if(originalPost.content == content){
-      if( (!image && !originalPost.image) || (!image && originalPost.image.path) )
+      if( !image && (!originalPost.imagePath || (originalPost.imagePath && !imageDelete)) )
       {
         this.router.navigate(['/']);
         this.auth.openSnackBar("No changes occured");
@@ -78,7 +81,7 @@ export class PostService {
     postData = new FormData();
     postData.append('content',content);
     if(image){
-      let imageName = `${this.auth.getAuth().firstName}-${this.auth.getAuth().lastName}-${new Date().toJSON()}`.toLowerCase();
+      let imageName = `${this.auth.getAuth().firstName} ${this.auth.getAuth().lastName} ${new Date().toJSON()}`;
       postData.append('image',image, imageName);
     }
 
@@ -89,22 +92,4 @@ export class PostService {
         this.auth.openSnackBar(response.message);
       });
   }
-
-  createImageUrl(type:imageType, binary: string){
-    return `data:${type};base64,${binary}`;
-  }
-
-  // dataURLtoFile(dataurl, filename) {
-  //   let start = dataurl.indexOf('data:');
-  //   dataurl = dataurl.substring(start);
-  //   let arr = dataurl.split(',');
-  //   let mime = arr[0].match(/:(.*?);/)[1];
-  //   let bstr = atob(arr[1]);
-  //   let n = bstr.length, u8arr = new Uint8Array(n);
-  //   while(n--){
-  //       u8arr[n] = bstr.charCodeAt(n);
-  //   }
-  //   return new File([u8arr], filename, {type:mime});
-  // }
-
 }

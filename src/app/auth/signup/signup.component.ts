@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
 import { User } from '../user.model';
@@ -8,7 +8,7 @@ import { User } from '../user.model';
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
-export class SignupComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+export class SignupComponent implements OnInit, OnDestroy {
 
   public userModel: User;
   public passwordNoMatch: boolean;
@@ -17,6 +17,9 @@ export class SignupComponent implements OnInit, AfterViewInit, AfterViewChecked,
   constructor(private auth: AuthService) { }
 
   ngOnInit() {
+    setTimeout(()=>{
+      document.getElementById('focus').focus();
+    },150);
     this.userModel = {
       firstName: "",
       lastName: "",
@@ -28,13 +31,6 @@ export class SignupComponent implements OnInit, AfterViewInit, AfterViewChecked,
         this.isLoading = false;
       }
     );
-  }
-
-  ngAfterViewInit(){
-    document.getElementById('focus').focus();
-  }
-  ngAfterViewChecked(){
-    console.clear();
   }
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
@@ -8,24 +8,21 @@ import { Subscription } from 'rxjs';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
   isLoading= false;
   private authStatusSub: Subscription;
 
   constructor(private auth: AuthService) {}
 
   ngOnInit() {
+    setTimeout(()=>{
+      document.getElementById('focus').focus();
+    },150);
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
       _authStatus => {
         this.isLoading = false;
       }
     );
-  }
-  ngAfterViewInit(){
-    document.getElementById('focus').focus();
-  }
-  ngAfterViewChecked(){
-    console.clear();
   }
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
