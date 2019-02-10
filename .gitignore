@@ -10,7 +10,7 @@
 /backend/node_modules
 
 # server environment variables
-/backend/nodemon.json
+backend/nodemon.json
 
 # IDEs and editors
 /.idea
