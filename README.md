@@ -2,7 +2,7 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.1.
 
-Hosted now on [allam-book](http://socialmedia-env.6h2ff58d57.us-east-2.elasticbeanstalk.com/)
+Running on [allam-book](http://allambook.eu-west-3.elasticbeanstalk.com/)
 
 ## Development server
 
