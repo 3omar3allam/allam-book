@@ -44,7 +44,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       }
     );
     setTimeout(()=>{
-      document.getElementById('focus').focus();
+      if(!this.isLoading)
+        document.getElementById('focus').focus();
     },500);
     this.form = new FormGroup({
       content: new FormControl(null, {
@@ -115,6 +116,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.imageDelete
       );
     }
+    this.isLoading = true;
   }
 
   onImagePicked(event: Event){

@@ -10,7 +10,9 @@ run `npm install` to install depencencies then run `ng serve` for a dev server. 
 
 ## Backend server
 
-Navigate to [backend](backend/) directory and run `npm install` then run `nodemon server.js`
+1. Navigate to [backend](backend/) directory and run `npm install`.
+2. Modify [nodemon.json](nodemon.json) to run server locally.
+3. run `nodemon server.js`.
 
 ## Build
 

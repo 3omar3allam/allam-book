@@ -9,6 +9,9 @@
 /node_modules
 /backend/node_modules
 
+# server environment variables
+/backend/nodemon.json
+
 # IDEs and editors
 /.idea
 .project

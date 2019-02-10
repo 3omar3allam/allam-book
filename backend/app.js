@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
 
+const https = require('https');
+
 const postsRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
 
@@ -20,14 +22,19 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
-app.use('/images/:name', (req,res,next)=>{
-    res.sendFile(path.join(__dirname,'images',req.params.name));
-});
 
 app.use('/',  express.static(path.join(__dirname,FRONTEND_DIRNAME)));
 
 app.use("/posts",postsRoutes);
 app.use("/auth", authRoutes);
+
+app.get('/images/:name',(req,res) => {
+  let externalReq = https.request(
+    `https://${process.env.STORAGE_LOCATION}/${process.env.BUCKET_NAME}/images/${req.params.name}`,
+    externalRes => externalRes.pipe(res)
+  );
+  externalReq.end();
+});
 
 app.use((req,res,next)=>{
   res.sendFile(path.join(__dirname,FRONTEND_DIRNAME,"index.html"));

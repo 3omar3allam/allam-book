@@ -1,8 +1,12 @@
 {
   "env": {
     "MONGO_ATLAS_PW": "xdClArKAqRTZNAI5",
-    "JWT_KEY": "mySecretCode",
+    "JWT_KEY": "jhjcewdwe8322duih3edmjaowwfdfb38oo",
     "SESSION_EXPIRE": 604800,
-    "PORT": 3000
+    "PORT": 3000,
+    "IAM_USER_KEY": "AKIAJJ6KFD7IZ2ULLWGA",
+    "IAM_USER_SECRET": "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",
+    "BUCKET_NAME": "elasticbeanstalk-eu-west-3-804049676699",
+    "STORAGE_LOCATION": "s3.eu-west-3.amazonaws.com"
   }
 }
