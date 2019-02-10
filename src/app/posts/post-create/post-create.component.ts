@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { PostService } from '../post.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { imageCompress } from './image.compress';
+import { whiteSpaceValidator } from './whitespace.validator';
 
 const enum mode  {
   create=0,
@@ -43,13 +44,9 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     );
-    setTimeout(()=>{
-      if(!this.isLoading)
-        document.getElementById('focus').focus();
-    },500);
     this.form = new FormGroup({
       content: new FormControl(null, {
-        validators: [Validators.required],
+        validators: [whiteSpaceValidator],
       }),
       image: new FormControl(null, {
         validators : null
@@ -84,10 +81,16 @@ export class PostCreateComponent implements OnInit, OnDestroy {
               this.form.get('content').clearValidators();
               this.form.get('content').updateValueAndValidity();
             }
+            setTimeout(()=> {
+              document.getElementById('focus').focus();
+            }, 250);
           });
       } else{
         this.mode = mode.create;
         this.postId = null;
+        setTimeout(()=> {
+          document.getElementById('focus').focus();
+        }, 150);
       }
     });
   }
@@ -99,18 +102,18 @@ export class PostCreateComponent implements OnInit, OnDestroy {
 
   onSavePost(){
     if(this.form.invalid) return;
-    let content = this.form.get('content').value;
+    let content = (this.form.get('content').value);
     if(content == null) content = "";
     if (this.mode == mode.create){
       this.postService.addPost(
-        content,
+        content.trim(),
         this.imageFile,
         new Date()
       );
     } else{
       this.postService.editPost(
         this.postId,
-        content,
+        content.trim(),
         this.imageFile,
         this.post,
         this.imageDelete
@@ -134,7 +137,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       });
   }
   deleteImage(){
-    this.form.get('content').setValidators(Validators.required);
+    this.form.get('content').setValidators(whiteSpaceValidator);
     this.form.get('content').updateValueAndValidity();
     this.imageDelete = true;
     this.imagePreview = null;

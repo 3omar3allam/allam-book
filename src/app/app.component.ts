@@ -9,7 +9,7 @@ import { LocationStrategy } from '@angular/common';
 })
 export class AppComponent implements OnInit {
 
-  title = 'allam book';
+  title = 'allambook';
 
   constructor(
     private auth: AuthService,

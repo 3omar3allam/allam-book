@@ -15,9 +15,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private auth: AuthService) {}
 
   ngOnInit() {
-    setTimeout(()=>{
-      document.getElementById('focus').focus();
-    },150);
+    setTimeout(()=> document.getElementById('focus').focus(), 150);
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
       _authStatus => {
         this.isLoading = false;

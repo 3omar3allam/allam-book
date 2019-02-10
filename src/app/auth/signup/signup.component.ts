@@ -17,15 +17,13 @@ export class SignupComponent implements OnInit, OnDestroy {
   constructor(private auth: AuthService) { }
 
   ngOnInit() {
-    setTimeout(()=>{
-      document.getElementById('focus').focus();
-    },150);
     this.userModel = {
       firstName: "",
       lastName: "",
       email: "",
       password: ""
     };
+    setTimeout(()=> document.getElementById('focus').focus(), 150);
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
       _authStatus => {
         this.isLoading = false;
