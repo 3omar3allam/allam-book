@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Post } from '../post.model';
 import { PostService } from '../post.service';
 import { Subscription } from 'rxjs';
-import { PageEvent } from '@angular/material';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -23,10 +22,10 @@ export class PostListComponent implements OnInit, OnDestroy {
   user: {id: string, name: string};
 
   totalPosts = 0;
-  pageSize = 10;
+  pageSize = 7;
   currentPage = 1;
-  pageSizeOptions = [5,10,25,50];
 
+  moreIsComing = false;
 
   constructor(private postService: PostService, private auth: AuthService) { }
 
@@ -42,11 +41,12 @@ export class PostListComponent implements OnInit, OnDestroy {
     }
     this.postsSub = this.postService.getPostUpdateListener()
       .subscribe(data => {
-        this.posts = data.posts;
+        this.posts = [...this.posts,...data.posts];
         this.totalPosts = data.total;
         this.timeDelta();
         this.urlify();
         this.isLoading = false;
+        this.moreIsComing = false;
       });
     this.authStatusSubs = this.auth.getAuthStatus()
       .subscribe(isAuthenticated => {
@@ -65,6 +65,15 @@ export class PostListComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.ngOnInit();
       });
+
+    window.onscroll = () => {
+      if(this.totalPosts > this.posts.length){
+        if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight) {
+          this.moreIsComing = true;
+          this.loadMore();
+        }
+      }
+    }
   }
 
   ngOnDestroy(){
@@ -77,19 +86,26 @@ export class PostListComponent implements OnInit, OnDestroy {
   onDelete(id: string){
     this.isLoading = true;
     this.postService.deletePost(id).subscribe(response=>{
-      this.postService.getPosts(this.pageSize,this.currentPage);
+      this.posts = this.posts.filter(post => post.id != id);
       this.auth.openSnackBar(response.message);
+      this.totalPosts --;
+      this.isLoading = false;
     },_error=>{
       this.isLoading = false;
     });
   }
 
-  onChangePage(pageData: PageEvent){
-    this.isLoading = true;
-    this.currentPage = pageData.pageIndex + 1;
-    this.pageSize = pageData.pageSize;
+  loadMore(){
+    this.currentPage++;
     this.postService.getPosts(this.pageSize,this.currentPage);
   }
+
+  // onChangePage(pageData: PageEvent){
+  //   this.isLoading = true;
+  //   this.currentPage = pageData.pageIndex + 1;
+  //   this.pageSize = pageData.pageSize;
+  //   this.postService.getPosts(this.pageSize,this.currentPage);
+  // }
 
   imageError(event){
     event.target.parentElement.classList.remove('post-image');

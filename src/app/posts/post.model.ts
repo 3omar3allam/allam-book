@@ -7,7 +7,7 @@ export class Post {
   date: Date;
   content: string;
   showContent: string;
-  imagePath: string;
+  imagesPath: Array<string>;
   edited: boolean;
   dateDiff: string;
   showImage: boolean;

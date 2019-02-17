@@ -8,7 +8,7 @@ const postSchema = Schema({
   date: {type: Date, required:true},
   content: {type: String},
   hasImage: {type: Boolean},
-  imagePath: {type: String},
+  imagesPath: [{type: String}],
   comments: [ {
     required:false,
     type: Schema({

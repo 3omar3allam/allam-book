@@ -1,4 +1,3 @@
-const FRONTEND_DIRNAME = 'angular';
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -23,7 +22,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-app.use('/',  express.static(path.join(__dirname,FRONTEND_DIRNAME)));
+app.use('', express.static(path.join(__dirname,'templates')));
 
 app.use("/posts",postsRoutes);
 app.use("/auth", authRoutes);
@@ -35,9 +34,9 @@ app.get('/images/:name',(req,res) => {
   );
   externalReq.end();
 });
-
-app.use((req,res,next)=>{
-  res.sendFile(path.join(__dirname,FRONTEND_DIRNAME,"index.html"));
-});
+// 
+// app.use((req,res,next)=>{
+//   res.sendFile(path.join(__dirname,'templates',"index.html"));
+// });
 
 module.exports = app;

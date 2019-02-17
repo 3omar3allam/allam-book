@@ -70,7 +70,7 @@ export class PostService {
   }
   editPost(userId:string, content:string, image: File, originalPost: Post, imageDelete: boolean){
     if(originalPost.content == content){
-      if( !image && (!originalPost.imagePath || (originalPost.imagePath && !imageDelete)) )
+      if( !image && (originalPost.imagesPath.length == 0 || (originalPost.imagesPath.length > 0 && !imageDelete)) )
       {
         this.router.navigate(['/']);
         this.auth.openSnackBar("No changes occured");

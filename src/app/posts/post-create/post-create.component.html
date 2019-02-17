@@ -9,30 +9,44 @@
     </mat-form-field>
 
     <div>
-      <input type="file" formControlName='image'
+      <input type="file" multiple="true" formControlName='image'
        accept="image/png,image/jpeg,image/jpg,image/gif"
         hidden #filePicker (change)='onImagePicked($event)'/>
       <button mat-stroked-button type='button'
         (click)='filePicker.click()'>
-        {{ imagePreview? 'Edit photo':'Add a photo' }}
+        {{ imagePreview.length > 0? 'Edit photo':'Add a photo' }}
       </button>
       <mat-error class='img-error' *ngIf="imageError">
         Invalid file upload (make sure you entered a photo)
       </mat-error>
-      <div class='image-preview' *ngIf="imagePreview && imagePreview !== '' && form.get('image').valid">
+      <div class='image-preview' *ngIf="imagePreview && imagePreview.length > 0 && form.get('image').valid">
         <span class="remove" disabled (click)=deleteImage()>X</span>
-        <img [src]='imagePreview' alt='cannot preview image' />
+        <img [src]='imagePreview[0]' alt='cannot preview image' />
       </div>
     </div>
 
-    <br /><br />
-
-    <button
-      [disabled]='form.invalid'
-      mat-raised-button
-      color="primary"
-      type='submit'>{{mode == 0? "Share":"Save"}}
-    </button>
+    <br />
+    <div class="mx-auto row justify-content-between">
+      <button
+        [disabled]='form.invalid'
+        mat-raised-button
+        color="primary"
+        type='submit'>{{mode == 0? "Share":"Save"}}
+      </button>
+      <button
+        *ngIf="mode==1"
+        (click)="deletePost()"
+        mat-raised-button
+        color='warn'
+        >Delete
+      </button>
+      <button
+        *ngIf="mode==0"
+        routerLink="/"
+        mat-button
+        >Cancel
+      </button>
+    </div>
 
   </form>
 </mat-card>

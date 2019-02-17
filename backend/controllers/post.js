@@ -1,8 +1,6 @@
 const Post = require('../models/post');
 const User = require('../models/user');
 
-const extractFile = require('../middleware/extract-file');
-
 exports.getPosts = (req,res,next)=>{
   const pageSize = parseInt(req.query.pagesize);
   const currentPage = parseInt(req.query.page);
@@ -29,7 +27,7 @@ exports.getPosts = (req,res,next)=>{
           },
           date: post.date,
           content: post.content,
-          imagePath: post.imagePath,
+          imagesPath: post.imagesPath,
           edited: post.edited,
         };
       })
@@ -61,7 +59,7 @@ exports.getPost = (req,res,next)=>{
           },
           date: post.date,
           content: post.content,
-          imagePath: post.imagePath,
+          imagesPath: post.imagesPath,
         });
       }else{
         res.status(404).json({message: 'Post not found'});
@@ -76,10 +74,21 @@ exports.getPost = (req,res,next)=>{
 }
 
 exports.addPost = (req,res,next)=>{
-  let imagePath = null;
+  let imagesPath = [];
   if(req.files) {
-    const url = req.protocol +"://" + req.get('host');
-    imagePath = url+ "/images/" + extractFile(req.files.image);
+    const {success, error, filenames} = req.uploadStatus;
+    if(!success){
+      res.status(500).json({
+        message: error
+      }).end();
+    }else {
+      for(let filename of filenames){
+        let host = req.hostname;
+        if(host === 'localhost') host += `:${process.env.PORT}`
+        const url = req.protocol +"://" + host;
+        imagesPath.push(url+ "/images/" + filename);
+      }
+    }
   }
   User.findById(req.userData.userId)
   .then(user => {
@@ -87,7 +96,7 @@ exports.addPost = (req,res,next)=>{
       creator: user,
       date: req.body.date,
       content: req.body.content,
-      imagePath: imagePath,
+      imagesPath: imagesPath,
       edited: false,
       hasImage: req.body.hasImage
     });
@@ -131,15 +140,26 @@ exports.deletePost = (req,res,next) => {
 exports.editPost = (req,res,next) => {
   Post.findById(req.params.id)
   .then(post => {
-    let imagePath = null;
+    let imagesPath = [];
     if(req.files) {
-      const url = req.protocol +"://" + req.get('host');
-      imagePath = url+ "/images/" + extractFile(req.files.image);
+      const {success, error, filenames} = req.uploadStatus;
+      if(!success){
+        res.status(500).json({
+          message: error
+        }).end();
+      }else {
+        for(let filename of filenames){
+          let host = req.hostname;
+          if(host === 'localhost') host += `:${process.env.PORT}`
+          const url = req.protocol +"://" + host;
+          imagesPath.push(url+ "/images/" + filename);
+        }
+      }
     }
     if(post.creator._id == req.userData.userId){
       Post.updateOne({_id: req.params.id},{
         content: req.body.content,
-        imagePath: imagePath,
+        imagesPath: imagesPath,
         hasImage: req.body.hasImage
       }).then(result=>{
         if(result.nModified){

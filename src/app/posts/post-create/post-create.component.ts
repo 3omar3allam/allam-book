@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { PostService } from '../post.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Post } from '../post.model';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
@@ -25,7 +25,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   private postId: string;
   public post: Post;
   isLoading = false;
-  imagePreview: string;
+  imagePreview= new Array<string>();
   imageFile: File;
   imageDelete: boolean;
   imageError: boolean;
@@ -36,7 +36,9 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   constructor(
     private postService: PostService,
     private route: ActivatedRoute,
-    private auth: AuthService) { }
+    private auth: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
@@ -66,7 +68,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
               id: postData._id,
               creator: postData.creator,
               content: postData.content,
-              imagePath: postData.imagePath,
+              imagesPath: postData.imagesPath,
               date: postData.date,
               edited: postData.edited,
               dateDiff: null,
@@ -76,8 +78,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
             this.form.patchValue({
               content: this.post.content,
             });
-            if(this.post.imagePath){
-              this.imagePreview = this.post.imagePath;
+            if(this.post.imagesPath.length > 0){
+              this.imagePreview = this.post.imagesPath;
               this.form.get('content').clearValidators();
               this.form.get('content').updateValueAndValidity();
             }
@@ -130,7 +132,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.form.get('content').updateValueAndValidity();
         this.imageError = false;
         this.imageFile = file;
-        this.imagePreview = preview;
+        this.imagePreview = [preview];
       },_error=>{
         this.imageError = true;
         this.deleteImage();
@@ -140,8 +142,19 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     this.form.get('content').setValidators(whiteSpaceValidator);
     this.form.get('content').updateValueAndValidity();
     this.imageDelete = true;
-    this.imagePreview = null;
+    this.imagePreview.pop();
     this.form.patchValue({image:null});
     this.imageFile = null;
   }
+
+  deletePost(){
+    this.isLoading = true;
+    this.postService.deletePost(this.postId).subscribe(response=>{
+      this.router.navigate(['']);
+      this.auth.openSnackBar(response.message);
+    },_error=>{
+      this.isLoading = false;
+    });
+  }
+
 }

@@ -16,12 +16,12 @@
     </div>
     <mat-card-content>
       <p class="post-content" *ngIf='post.content' [innerHTML]='post.showContent | safe'></p>
-      <div class='post-image' *ngIf='post.imagePath'>
+      <div class='post-image' *ngIf='post.imagesPath && post.imagesPath.length>0'>
         <mat-card-actions>
           <button mat-raised-button (click)=toggleImage(post)>{{post.showImage? 'hide photo':'display photo'}}</button>
         </mat-card-actions>
         <img
-         [src]='post.imagePath'
+         [src]='post.imagesPath[0]'
           alt='cannot show image'
           *ngIf='post.showImage' />
       </div>
@@ -33,7 +33,7 @@
   </mat-card>
 </mat-accordion>
 
-<mat-paginator [length]=totalPosts [pageSize]=pageSize [pageSizeOptions]=pageSizeOptions (page)='onChangePage($event)'></mat-paginator>
+<mat-spinner *ngIf='moreIsComing'></mat-spinner>
 
 <ng-template *ngIf='!isLoading && posts.length == 0'>
   <p class='info-text mat-body-1'>No posts added yet!</p>
