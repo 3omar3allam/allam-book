@@ -100,13 +100,6 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.postService.getPosts(this.pageSize,this.currentPage);
   }
 
-  // onChangePage(pageData: PageEvent){
-  //   this.isLoading = true;
-  //   this.currentPage = pageData.pageIndex + 1;
-  //   this.pageSize = pageData.pageSize;
-  //   this.postService.getPosts(this.pageSize,this.currentPage);
-  // }
-
   imageError(event){
     event.target.parentElement.classList.remove('post-image');
   }

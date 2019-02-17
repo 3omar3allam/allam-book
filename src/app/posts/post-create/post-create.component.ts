@@ -79,7 +79,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
               content: this.post.content,
             });
             if(this.post.imagesPath.length > 0){
-              this.imagePreview = this.post.imagesPath;
+              this.imagePreview = [...this.post.imagesPath];
               this.form.get('content').clearValidators();
               this.form.get('content').updateValueAndValidity();
             }
