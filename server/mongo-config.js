@@ -1,7 +1,8 @@
-module.exports = (mongoose) => {
-  mongoose.connect(
+const mongoose = require('mongoose');
+
+mongoose.connect(
     process.env.MONGO_CONN_STR,
-    { useNewUrlParser: true, autoIndex: false }
+    { useNewUrlParser: true, useCreateIndex: true }
   )
   .then(()=>{
     console.log('Connected to database!')
@@ -10,4 +11,3 @@ module.exports = (mongoose) => {
     console.log('Connection failed!');
     console.log(error);
   });
-}

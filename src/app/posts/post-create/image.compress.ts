@@ -1,21 +1,21 @@
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 export const imageCompress = (file: File) => {
     const width = 600; // For scaling relative to width
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    let mimeType = file.type;
+    const mimeType = file.type;
     return new Observable<{file: File, preview: string}>(observer => {
       reader.onload = ev => {
         const img = new Image();
         img.src = (ev.target as any).result;
-        if(mimeType == 'image/gif') {
+        if (mimeType === 'image/gif') {
           observer.next({
             file: file,
             preview: img.src
           });
-        }else{
-          img.onload = () =>{
+        } else {
+          img.onload = () => {
             const elem = document.createElement('canvas'); // Use Angular's Renderer2 method
             const scaleFactor = width / img.width;
             elem.width = width;
@@ -41,4 +41,4 @@ export const imageCompress = (file: File) => {
       };
       reader.onerror = error => observer.error(error);
     });
-  }
+  };

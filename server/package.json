@@ -2,6 +2,9 @@
   "name": "allam-book",
   "version": "4.2.3",
   "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
     "aws-sdk": "^2.400.0",
     "bcryptjs": "^2.4.3",

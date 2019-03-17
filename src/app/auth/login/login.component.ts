@@ -9,13 +9,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  isLoading= false;
+  isLoading = false;
   private authStatusSub: Subscription;
 
   constructor(private auth: AuthService) {}
 
   ngOnInit() {
-    setTimeout(()=> document.getElementById('focus').focus(), 150);
+    setTimeout(() => document.getElementById('focus').focus(), 150);
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
       _authStatus => {
         this.isLoading = false;
@@ -25,10 +25,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
   }
-  onLogin(form: NgForm){
-    if(form.invalid) return;
+  onLogin(form: NgForm) {
+    if (form.invalid) { return; }
     this.isLoading = true;
-    this.auth.login(form.value.email,form.value.password);
+    this.auth.login(form.value.email, form.value.password);
   }
 
 }

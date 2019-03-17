@@ -2,17 +2,15 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
 
 const https = require('https');
 
-const postsRoutes = require('./routes/posts');
-const authRoutes = require('./routes/auth');
-
-require('./mongo-config')(mongoose);
+require('./mongo-config');
 
 const app = express();
+
+app.use('', express.static(path.join(__dirname,'templates')));
 
 app.use(cors());
 app.use(fileUpload());
@@ -21,9 +19,8 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
-
-app.use('', express.static(path.join(__dirname,'templates')));
-
+const postsRoutes = require('./routes/posts');
+const authRoutes = require('./routes/auth');
 app.use("/posts",postsRoutes);
 app.use("/auth", authRoutes);
 
@@ -34,9 +31,8 @@ app.get('/images/:name',(req,res) => {
   );
   externalReq.end();
 });
-// 
-// app.use((req,res,next)=>{
-//   res.sendFile(path.join(__dirname,'templates',"index.html"));
-// });
 
-module.exports = app;
+app.use('*', express.static(path.join(__dirname,'templates')));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

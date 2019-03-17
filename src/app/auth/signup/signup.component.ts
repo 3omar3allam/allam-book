@@ -12,18 +12,18 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   public userModel: User;
   public passwordNoMatch: boolean;
-  isLoading= false;
+  isLoading = false;
   private authStatusSub: Subscription;
   constructor(private auth: AuthService) { }
 
   ngOnInit() {
     this.userModel = {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: ""
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: ''
     };
-    setTimeout(()=> document.getElementById('focus').focus(), 150);
+    setTimeout(() => document.getElementById('focus').focus(), 150);
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
       _authStatus => {
         this.isLoading = false;
@@ -34,16 +34,11 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.authStatusSub.unsubscribe();
   }
 
-  validatePassword(confirmPassword: string){
-    if(confirmPassword != this.userModel.password){
-      this.passwordNoMatch = true;
-    }
-    else{
-      this.passwordNoMatch = false;
-    }
+  validatePassword(confirmPassword: string) {
+    this.passwordNoMatch = confirmPassword !== this.userModel.password;
   }
 
-  onSignup(){
+  onSignup() {
     this.isLoading = true;
     this.auth.createUser(this.userModel);
   }

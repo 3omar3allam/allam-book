@@ -13,12 +13,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private authListenerSubs: Subscription;
   private loggedUserListenerSubs: Subscription;
-  authenticated: boolean = false;
-  username: string = "";
+  authenticated = false;
+  username = '';
 
   private layoutChanges = new Observable<BreakpointState>();
-  mobileView: boolean = false;
-  scrolled: boolean = false;
+  mobileView = false;
+  scrolled = false;
 
   constructor(private auth: AuthService, private breakpointObserver: BreakpointObserver) {}
 
@@ -27,20 +27,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.layoutChanges = this.breakpointObserver.observe('(max-width: 768px)');
 
-    this.layoutChanges.subscribe(result=> {
+    this.layoutChanges.subscribe(result => {
       this.mobileView = result.matches;
-    })
+    });
 
     window.addEventListener('scroll', () => {
-      if(window.scrollY > 50){
+      if (window.scrollY > 50) {
         this.scrolled = true;
-      }else{
+      } else {
         this.scrolled = false;
       }
     });
 
     this.authenticated = this.auth.isAuthenticated();
-    if(this.authenticated){
+    if (this.authenticated) {
       this.username = `${this.auth.getAuth().firstName} ${this.auth.getAuth().lastName}`;
     }
 
@@ -50,24 +50,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
       });
     this.loggedUserListenerSubs = this.auth.getLoggedUserListener()
       .subscribe(loggedUser => {
-        if(loggedUser.firstName && loggedUser.lastName){
+        if (loggedUser.firstName && loggedUser.lastName) {
           this.username = `${loggedUser.firstName} ${loggedUser.lastName}`;
         }
       });
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.authListenerSubs.unsubscribe();
     this.loggedUserListenerSubs.unsubscribe();
   }
 
-  onLogout(){
+  onLogout() {
     this.authenticated = false;
     this.username = null;
     this.auth.logout();
   }
 
-  refresh(){
+  refresh() {
     this.auth.refresh();
   }
 

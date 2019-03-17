@@ -7,13 +7,12 @@
 
 # dependencies
 /node_modules
-/backend/node_modules
 
 # server environment variables
-backend/nodemon.json
+server/nodemon.json
 
 # github pages 404 file
-backend/templates/404.html
+server/templates/404.html
 
 # IDEs and editors
 /.idea

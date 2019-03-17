@@ -31,17 +31,17 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isLoading = true;
-    this.postService.getPosts(this.pageSize,this.currentPage);
+    this.postService.getPosts(this.pageSize, this.currentPage);
     this.authenticated = this.auth.isAuthenticated();
-    if(this.authenticated){
+    if (this.authenticated) {
       this.user = {
         id: this.auth.getAuth().id,
         name: `${this.auth.getAuth().firstName} ${this.auth.getAuth().lastName}`,
-      }
+      };
     }
     this.postsSub = this.postService.getPostUpdateListener()
       .subscribe(data => {
-        this.posts = [...this.posts,...data.posts];
+        this.posts = [...this.posts, ...data.posts];
         this.totalPosts = data.total;
         this.timeDelta();
         this.urlify();
@@ -54,11 +54,11 @@ export class PostListComponent implements OnInit, OnDestroy {
       });
     this.loggedUserSubs = this.auth.getLoggedUserListener()
       .subscribe(loggedUser => {
-        if(loggedUser.id && loggedUser.firstName && loggedUser.lastName){
+        if (loggedUser.id && loggedUser.firstName && loggedUser.lastName) {
           this.user = {
             id: loggedUser.id,
             name: `${loggedUser.firstName} ${loggedUser.lastName}`,
-          }
+          };
         }
       });
     this.refreshSubs = this.auth.getRefreshListener()
@@ -67,97 +67,97 @@ export class PostListComponent implements OnInit, OnDestroy {
       });
 
     window.onscroll = () => {
-      if(this.totalPosts > this.posts.length){
+      if (this.totalPosts > this.posts.length) {
         if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight) {
           this.moreIsComing = true;
           this.loadMore();
         }
       }
-    }
+    };
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.postsSub.unsubscribe();
     this.authStatusSubs.unsubscribe();
     this.loggedUserSubs.unsubscribe();
     this.refreshSubs.unsubscribe();
   }
 
-  onDelete(id: string){
+  onDelete(id: string) {
     this.isLoading = true;
-    this.postService.deletePost(id).subscribe(response=>{
-      this.posts = this.posts.filter(post => post.id != id);
+    this.postService.deletePost(id).subscribe(response => {
+      this.posts = this.posts.filter(post => post.id !== id);
       this.auth.openSnackBar(response.message);
       this.totalPosts --;
       this.isLoading = false;
-    },_error=>{
+    }, _error => {
       this.isLoading = false;
     });
   }
 
-  loadMore(){
+  loadMore() {
     this.currentPage++;
-    this.postService.getPosts(this.pageSize,this.currentPage);
+    this.postService.getPosts(this.pageSize, this.currentPage);
   }
 
-  imageError(event){
+  imageError(event) {
     event.target.parentElement.classList.remove('post-image');
   }
 
-  toggleImage(post){
+  toggleImage(post) {
     post.showImage = !post.showImage;
   }
 
-  private timeDelta(){
-    let now = new Date();
+  private timeDelta() {
+    const now = new Date();
     this.posts.forEach(post => {
       post.showImage = false;
-      let milliDiff = now.getTime() - new Date(post.date).getTime();
-      let yearDiff = Math.floor(milliDiff/ (1000*3600*24*365));
-      if(yearDiff){
+      const milliDiff = now.getTime() - new Date(post.date).getTime();
+      const yearDiff = Math.floor(milliDiff / (1000 * 3600 * 24 * 365));
+      if (yearDiff) {
         post.dateDiff = `${yearDiff} year`;
-        if(yearDiff>1) post.dateDiff += 's';
+        if (yearDiff > 1) { post.dateDiff += 's'; }
         return;
       }
-      let monthDiff = Math.floor(milliDiff/ (1000*3600*24*30));
-      if(monthDiff){
+      const monthDiff = Math.floor(milliDiff / (1000 * 3600 * 24 * 30));
+      if (monthDiff) {
         post.dateDiff = `${monthDiff} month`;
-        if(monthDiff>1) post.dateDiff += 's';
+        if (monthDiff > 1) { post.dateDiff += 's'; }
         return;
       }
-      let weekDiff = Math.floor(milliDiff/ (1000*3600*24*7));
-      if(weekDiff){
+      const weekDiff = Math.floor(milliDiff / (1000 * 3600 * 24 * 7));
+      if (weekDiff) {
         post.dateDiff = `${weekDiff} week`;
-        if(weekDiff>1) post.dateDiff += 's';
+        if (weekDiff > 1) { post.dateDiff += 's'; }
         return;
       }
-      let dayDiff = Math.floor(milliDiff/ (1000*3600*24));
-      if(dayDiff){
+      const dayDiff = Math.floor(milliDiff / (1000 * 3600 * 24));
+      if (dayDiff) {
         post.dateDiff = `${dayDiff} day`;
-        if(dayDiff>1) post.dateDiff += 's';
+        if (dayDiff > 1) { post.dateDiff += 's'; }
         return;
       }
-      let hourDiff = Math.floor(milliDiff/ (1000*3600));
-      if(hourDiff){
+      const hourDiff = Math.floor(milliDiff / (1000 * 3600));
+      if (hourDiff) {
         post.dateDiff = `${hourDiff} hour`;
-        if(hourDiff>1) post.dateDiff += 's';
+        if (hourDiff > 1) { post.dateDiff += 's'; }
         return;
       }
-      let minDiff = Math.floor(milliDiff/ (1000*60));
-      if(minDiff){
+      const minDiff = Math.floor(milliDiff / (1000 * 60));
+      if (minDiff) {
         post.dateDiff = `${minDiff} minute`;
-        if(minDiff>1) post.dateDiff += 's';
+        if (minDiff > 1) { post.dateDiff += 's'; }
         return;
       }
-      let secDiff= Math.floor(milliDiff/ 1000);
+      const secDiff = Math.floor(milliDiff / 1000);
       post.dateDiff = `${secDiff} second`;
-      if(secDiff>1) post.dateDiff += 's';
+      if (secDiff > 1) { post.dateDiff += 's'; }
     });
   }
 
-  private urlify(){
-    let urlRegex = /(http(s)?:\/\/)?(www\.)?([\w\-]+\.)?([\w\-]+)(:\d)?(\.[a-z]{2,3})+(\/[\w\-\.]+)*(\?[^\s]+)?/gi;
-    let groups = {
+  private urlify() {
+    const urlRegex = /(http(s)?:\/\/)?(www\.)?([\w\-]+\.)?([\w\-]+)(:\d)?(\.[a-z]{2,3})+(\/[\w\-\.]+)*(\?[^\s]+)?/gi;
+    const groups = {
       protocol: 1,
       ssl: 2,
       www: 3,
@@ -167,29 +167,28 @@ export class PostListComponent implements OnInit, OnDestroy {
       tlp: 7,
       path: 8,
       params: 9,
-    }
-    this.posts.forEach(post=>{
-      if(!post.content|| post.content == ""){
-        post.showContent = "";
+    };
+    this.posts.forEach(post => {
+      if (!post.content || post.content === '') {
+        post.showContent = '';
         post.showImage = true;
         return;
       }
-      let links = post.content.match(urlRegex);
+      const links = post.content.match(urlRegex);
       post.showContent = post.content;
-      if(!links){
+      if (!links) {
         return;
-      }
-      else{
-        for(let link of links){
-          let urlComponents = urlRegex.exec(link);
+      } else {
+        for (const link of links) {
+          const urlComponents = urlRegex.exec(link);
           urlRegex.lastIndex = 0;
-          let protocol = "";
-          if(!urlComponents[groups.protocol] && !urlComponents[groups.www]){
-            protocol = "http://";
+          let protocol = '';
+          if (!urlComponents[groups.protocol] && !urlComponents[groups.www]) {
+            protocol = 'http://';
           }
           post.showContent = post.showContent.replace(
             link,
-            `<a href=\'${protocol+link}\' target="_blank">${link}</a>`
+            `<a href=\'${protocol + link}\' target="_blank">${link}</a>`
           );
         }
       }

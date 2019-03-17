@@ -15,9 +15,9 @@ export const BACKEND_URL = environment.apiUrl + '/auth/';
 export class AuthService {
   private token: string;
   private authenticated = false;
-  private authStatusListener= new Subject<boolean>();
-  private loggedUserListener = new Subject<{id:string, firstName:string, lastName: string}>();
-  private refreshListener= new Subject<boolean>();
+  private authStatusListener = new Subject<boolean>();
+  private loggedUserListener = new Subject<{id: string, firstName: string, lastName: string}>();
+  private refreshListener = new Subject<boolean>();
   private timeout: any;
   private userId: string;
   private userFirstName: string;
@@ -29,32 +29,32 @@ export class AuthService {
     private snackBar: MatSnackBar
   ) { }
 
-  getToken(){
+  getToken() {
     return this.token;
   }
 
-  isAuthenticated(){
+  isAuthenticated() {
     return this.authenticated;
   }
 
-  getAuth(){
-    let authdata = this.getAuthData();
+  getAuth() {
+    const authdata = this.getAuthData();
     return{
       id: authdata.userId,
       firstName: authdata.firstName,
       lastName: authdata.lastName,
-    }
+    };
   }
 
-  getAuthStatus(){
+  getAuthStatus() {
     return this.authStatusListener.asObservable();
   }
 
-  getLoggedUserListener(){
+  getLoggedUserListener() {
     return this.loggedUserListener.asObservable();
   }
 
-  createUser(userModel: User){
+  createUser(userModel: User) {
 
     const user: User = {
       firstName: userModel.firstName,
@@ -63,24 +63,24 @@ export class AuthService {
       password: userModel.password,
     };
     return this._http.post<any>
-    (BACKEND_URL + "register/", user)
+    (BACKEND_URL + 'register/', user)
     .subscribe(() => {
-      this.login(user.email,user.password);
-    }, _error => {
+      this.login(user.email, user.password);
+    }, _ => {
       this.authStatusListener.next(false);
-      this.loggedUserListener.next({id:null,firstName:null,lastName:null});
+      this.loggedUserListener.next({id: null, firstName: null, lastName: null});
     });
   }
 
-  login(email: string, password: string){
+  login(email: string, password: string) {
     const loginData = {
-      email:email, password: password,
+      email: email, password: password,
     };
     this._http.post<any>
     (BACKEND_URL + 'login/', loginData)
       .subscribe(response => {
         this.token = response.token;
-        if(this.token){
+        if (this.token) {
           const expiresInDuration = response.expiresIn;
           this.setAuthTimer(expiresInDuration);
           this.authenticated = true;
@@ -92,38 +92,38 @@ export class AuthService {
             id: this.userId,
             firstName: this.userFirstName,
             lastName: this.userLastName,
-          })
+          });
           const now = new Date();
           const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
           this.saveAuthData(this.token, expirationDate, this.userId, this.userFirstName, this.userLastName);
           this.router.navigate(['/']);
           this.openSnackBar(response.message);
         }
-      },_error => {
+      }, _ => {
         this.authStatusListener.next(false);
-        this.loggedUserListener.next({id:null,firstName:null,lastName:null});
+        this.loggedUserListener.next({id: null, firstName: null, lastName: null});
       });
   }
-  logout(){
+  logout() {
     this.token = null;
     this.authenticated = false;
     this.authStatusListener.next(false);
-    this.loggedUserListener.next({id:null,firstName:null,lastName:null});
+    this.loggedUserListener.next({id: null, firstName: null, lastName: null});
     this.userId = null;
     this.userFirstName = null;
     this.userLastName = null;
     clearTimeout(this.timeout);
     this.clearAuthData();
     this.refresh();
-    this.openSnackBar("Logged Out");
+    this.openSnackBar('Logged Out');
   }
 
-  autoAuthUser(){
+  autoAuthUser() {
     const authInformation = this.getAuthData();
-    if(!authInformation) return;
+    if (!authInformation) { return; }
     const now = new Date();
     const expiresIn = authInformation.expirationDate.getTime() - now.getTime();
-    if(expiresIn > 0){
+    if (expiresIn > 0) {
       this.token = authInformation.token;
       this.authenticated = true;
       this.userId = authInformation.userId;
@@ -134,26 +134,26 @@ export class AuthService {
         id: this.userId,
         firstName: this.userFirstName,
         lastName: this.userLastName,
-      })
-      this.setAuthTimer(expiresIn/1000);
+      });
+      this.setAuthTimer(expiresIn / 1000);
     }
   }
 
-  private setAuthTimer(duration: number){
-    this.timeout = setTimeout(()=>{
+  private setAuthTimer(duration: number) {
+    this.timeout = setTimeout(() => {
       this.logout();
     }, duration * 1000);
   }
 
-  private saveAuthData(token: string, expirationDate: Date, userId: string, fname: string, lname: string){
-    localStorage.setItem('token',token);
+  private saveAuthData(token: string, expirationDate: Date, userId: string, fname: string, lname: string) {
+    localStorage.setItem('token', token);
     localStorage.setItem('expiration', expirationDate.toISOString());
     localStorage.setItem('userId', userId);
     localStorage.setItem('firstName', fname);
     localStorage.setItem('lastName', lname);
   }
 
-  private clearAuthData(){
+  private clearAuthData() {
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
     localStorage.removeItem('userId');
@@ -161,13 +161,13 @@ export class AuthService {
     localStorage.removeItem('lastName');
   }
 
-  private getAuthData(){
+  private getAuthData() {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
     const fname = localStorage.getItem('firstName');
     const lname = localStorage.getItem('lastName');
-    if(!token || !expirationDate){
+    if (!token || !expirationDate) {
       return ;
     }
     return {
@@ -176,10 +176,10 @@ export class AuthService {
       userId: userId,
       firstName: fname,
       lastName: lname
-    }
+    };
   }
 
-  getRefreshListener(){
+  getRefreshListener() {
     return this.refreshListener.asObservable();
   }
 
@@ -189,11 +189,10 @@ export class AuthService {
     });
   }
 
-  refresh(){
-    if(this.router.url == '/'){
+  refresh() {
+    if (this.router.url === '/') {
       this.refreshListener.next(true);
-    }
-    else{
+    } else {
       this.router.navigate(['/']);
     }
   }

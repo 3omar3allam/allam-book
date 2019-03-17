@@ -9,9 +9,9 @@ import { imageCompress } from './image.compress';
 import { whiteSpaceValidator } from './whitespace.validator';
 
 const enum mode  {
-  create=0,
-  edit=1,
-};
+  create= 0,
+  edit= 1,
+}
 
 @Component({
   selector: 'app-post-create',
@@ -25,7 +25,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   private postId: string;
   public post: Post;
   isLoading = false;
-  imagePreview= new Array<string>();
+  imagePreview = new Array<string>();
   imageFile: File;
   imageDelete: boolean;
   imageError: boolean;
@@ -42,7 +42,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authStatusSub = this.auth.getAuthStatus().subscribe(
-      _=> {
+      _ => {
         this.isLoading = false;
       }
     );
@@ -56,8 +56,8 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     });
     this.imageFile = null;
     this.imageDelete = false;
-    this.route.paramMap.subscribe((paramMap:ParamMap) => {
-      if(paramMap.has('id')){
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if (paramMap.has('id')) {
         this.mode = mode.edit;
         this.postId = paramMap.get('id');
         this.isLoading = true;
@@ -78,19 +78,19 @@ export class PostCreateComponent implements OnInit, OnDestroy {
             this.form.patchValue({
               content: this.post.content,
             });
-            if(this.post.imagesPath.length > 0){
+            if (this.post.imagesPath.length > 0) {
               this.imagePreview = [...this.post.imagesPath];
               this.form.get('content').clearValidators();
               this.form.get('content').updateValueAndValidity();
             }
-            setTimeout(()=> {
+            setTimeout(() => {
               document.getElementById('focus').focus();
             }, 250);
           });
-      } else{
+      } else {
         this.mode = mode.create;
         this.postId = null;
-        setTimeout(()=> {
+        setTimeout(() => {
           document.getElementById('focus').focus();
         }, 150);
       }
@@ -99,20 +99,20 @@ export class PostCreateComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
-    if(this.compressSub)this.compressSub.unsubscribe();
+    if (this.compressSub) {this.compressSub.unsubscribe(); }
   }
 
-  onSavePost(){
-    if(this.form.invalid) return;
+  onSavePost() {
+    if (this.form.invalid) { return; }
     let content = (this.form.get('content').value);
-    if(content == null) content = "";
-    if (this.mode == mode.create){
+    if (content == null) { content = ''; }
+    if (this.mode === mode.create) {
       this.postService.addPost(
         content.trim(),
         this.imageFile,
         new Date()
       );
-    } else{
+    } else {
       this.postService.editPost(
         this.postId,
         content.trim(),
@@ -124,35 +124,35 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     this.isLoading = true;
   }
 
-  onImagePicked(event: Event){
+  onImagePicked(event: Event) {
     this.imageFile = (event.target as HTMLInputElement).files[0];
     this.compressSub = imageCompress(this.imageFile).subscribe(
-      ({file,preview}) => {
+      ({file, preview}) => {
         this.form.get('content').clearValidators();
         this.form.get('content').updateValueAndValidity();
         this.imageError = false;
         this.imageFile = file;
         this.imagePreview = [preview];
-      },_error=>{
+      }, _error => {
         this.imageError = true;
         this.deleteImage();
       });
   }
-  deleteImage(){
+  deleteImage() {
     this.form.get('content').setValidators(whiteSpaceValidator);
     this.form.get('content').updateValueAndValidity();
     this.imageDelete = true;
     this.imagePreview.pop();
-    this.form.patchValue({image:null});
+    this.form.patchValue({image: null});
     this.imageFile = null;
   }
 
-  deletePost(){
+  deletePost() {
     this.isLoading = true;
-    this.postService.deletePost(this.postId).subscribe(response=>{
+    this.postService.deletePost(this.postId).subscribe(response => {
       this.router.navigate(['']);
       this.auth.openSnackBar(response.message);
-    },_error=>{
+    }, _error => {
       this.isLoading = false;
     });
   }
