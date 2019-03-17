@@ -2,7 +2,7 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.1.
 
-Running on [allam-book](http://allambook.eu-west-3.elasticbeanstalk.com/)
+Running on [allam-book](https://allambook.herokuapp.com/)
 
 ## Development server
 
