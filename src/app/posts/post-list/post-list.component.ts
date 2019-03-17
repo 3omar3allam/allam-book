@@ -164,7 +164,7 @@ export class PostListComponent implements OnInit, OnDestroy {
       subdomain: 4,
       domain: 5,
       port: 6,
-      tlp: 7,
+      tld: 7,
       path: 8,
       params: 9,
     };
@@ -183,7 +183,7 @@ export class PostListComponent implements OnInit, OnDestroy {
           const urlComponents = urlRegex.exec(link);
           urlRegex.lastIndex = 0;
           let protocol = '';
-          if (!urlComponents[groups.protocol] && !urlComponents[groups.www]) {
+          if (!urlComponents[groups.protocol]) {
             protocol = 'http://';
           }
           post.showContent = post.showContent.replace(
