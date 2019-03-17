@@ -11,8 +11,8 @@
 # server environment variables
 server/nodemon.json
 
-# github pages 404 file
-server/templates/404.html
+# built templates files
+/server/templates
 
 # IDEs and editors
 /.idea
