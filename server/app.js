@@ -21,8 +21,8 @@ app.use(bodyParser.urlencoded({
 
 const postsRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
-app.use("/posts",postsRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/posts",postsRoutes);
+app.use("/api/auth", authRoutes);
 
 app.get('/images/:name',(req,res) => {
   let externalReq = https.request(

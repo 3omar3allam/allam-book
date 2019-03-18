@@ -77,7 +77,7 @@ export class AuthService {
       email: email, password: password,
     };
     this._http.post<any>
-    (BACKEND_URL + 'login/', loginData)
+    (BACKEND_URL, loginData)
       .subscribe(response => {
         this.token = response.token;
         if (this.token) {
