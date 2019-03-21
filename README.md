@@ -2,7 +2,7 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.1.
 
-Running on [allam-book](https://allambook.herokuapp.com/)
+Running on [github pages](https://3omar3allam.github.io/allambook/)
 
 ## Development server
 
@@ -10,9 +10,7 @@ run `npm install` to install dependencies then run `ng serve` for a dev server. 
 
 ## Backend server
 
-1. Navigate to [server](server/) directory and run `npm install`.
-2. Modify environment variables.
-3. run `nodemon server.js`.
+Express application in [server](server/) ditrctory and running on [heroku](https://allambook.herokuapp.com/) server.
 
 ## Build
 
